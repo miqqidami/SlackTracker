@@ -1,13 +1,71 @@
 # SlackTracker
 
-A tiny macOS menu bar + Touch Bar work timer. Press **Start**, press **Stop**, and the period is written to a Markdown log.
+A small macOS work timer that lives in your **menu bar** and **Touch Bar**. Press **Start**, press **Stop**, and the period lands in a tidy Markdown log.
 
-## What it does
-- **Start / Stop** from the Touch Bar or from the ⏱ menu in the menu bar at the top of the screen.
-- While running, the menu bar shows the elapsed time for the **current period only** (e.g. `⏱ 0:42:10`). Every Start begins again at `0:00:00`.
-- **Stop** appends the period (start time, end time, duration) to `~/SlackWorkLog.md`.
-- A running period survives quitting/restarting the tracker or a reboot (auto-launches at login via `launchd`).
-- **Double-tap Command** presents the Touch Bar controls.
+## Highlights
+- **Period-only timer:** every Start begins at `0:00`. The menu bar and Touch Bar show only the current period, never a daily total.
+- **Touch Bar Control Strip button:** the live time is always visible on the right of the Touch Bar (red = recording, amber = paused). Tap it for the full controls.
+- **Full Touch Bar controls:** status, big timer, start time and note, then **Start / Pause / Resume**, **Stop** and **Discard** buttons.
+- **Menu bar:** the ⏱ icon becomes `◉ 12:45` while running. The menu has the same actions plus notes, today's periods and settings.
+- **Markdown log:** Stop adds a row to that day's table in `~/SlackWorkLog.md` and updates the day's total.
+- **Notes:** "Start with Note…" / "Edit Note…" attaches a note to the period, and it's saved in the log.
+- **Sleep aware:** closing the lid pauses the period and waking resumes it, so sleep time isn't counted.
+- **Forgot to stop?** You get a reminder every 2 hours of running time.
+- **Safe:** a running period survives quitting, crashes and reboots (auto-launches at login via `launchd`).
+
+## Shortcuts
+
+| Shortcut | Action |
+|:--|:--|
+| `⌘` `⌘` (double-tap Command) | Show the Touch Bar controls |
+| `⌃⌥⌘S` | Start / Stop |
+| `⌃⌥⌘T` | Show the Touch Bar controls |
+
+## Touch Bar
+
+```
+Control Strip:    … [ 12:45 ] ☀ 🔊 📷
+Full controls: ✕  ● REC  12:45   since 09:12 · Code review     [⏸ Pause] [■ Stop] [🗑]
+```
+
+After you tap Start, Pause or Stop, the controls return to the Control Strip after 3 seconds. You can turn that off in *Settings*.
+
+## Menu
+
+```
+◉ Recording · 12:45
+  Started 09:12 · paused 5m · Code review
+──────────
+⏸ Pause
+■ Stop & Log
+✎ Edit Note…
+🗑 Discard Period
+──────────
+📅 Today · 2h 10m in 3 periods  ▸  (each period listed)
+⧉ Copy Today's Summary
+📄 Open Log File
+──────────
+Show Touch Bar Controls
+⚙ Settings  ▸  Pause While Mac Sleeps · Show Seconds in Menu Bar ·
+               Auto-hide Touch Bar Controls · Remind Every 2 Hours
+──────────
+Quit SlackTracker
+```
+
+## Log file
+
+```markdown
+## 2026-09-29 · Tuesday
+
+| Start | End | Worked | Paused | Note |
+|:------|:----|-------:|-------:|:-----|
+| 09:00:00 | 10:17:33 | 1h 17m 33s | — | Code review |
+| 11:00:00 | 12:10:00 | 1h 00m 00s | 10m 00s | Docs |
+
+**Total:** 2h 17m 33s across 2 periods
+```
+
+A period belongs to the day it started. Rows already in the file are kept as they are, so you can edit notes by hand. Anything older in the file is left untouched.
 
 ## Install
 
@@ -15,49 +73,18 @@ A tiny macOS menu bar + Touch Bar work timer. Press **Start**, press **Stop**, a
 bash install.sh
 ```
 
-You'll see a ⏱ icon appear in your menu bar within a few seconds.
-
 ### Permissions
-- **Notifications** — allow when prompted (you get one each time a period is logged).
-- **Accessibility** — not normally required. SlackTracker registers the global hotkey through macOS Carbon APIs. If Carbon registration fails and it falls back to `pynput`, macOS may ask you to enable the Python binary at `~/.slacktracker/venv/bin/python` in *System Settings → Privacy & Security → Accessibility*.
-
-## Touch Bar
-
-Press `Command` twice quickly anywhere to show:
-
-```
-● 0:12:45 | ▶ Start | ■ Stop
-```
-
-Only the button that applies is enabled: **Start** when stopped, **Stop** while running. The old `Ctrl + Option + Cmd + T` shortcut still presents the Touch Bar as a fallback.
-
-You can tune the double-tap timing by editing `DOUBLE_COMMAND_SECONDS` at the top of `slacktracker.py`.
-
-## Menu bar
-
-- **Running since … / Timer stopped** — current status
-- **▶ Start Timer** / **■ Stop Timer**
-- **Show Touch Bar Timer** — same as the hotkey
-- **Open log file** — opens `~/SlackWorkLog.md`
-- **Quit SlackTracker** — stops the app (a running period is kept and resumes on relaunch)
+- **Notifications:** shown via macOS's built-in `osascript` notifications (listed under *Script Editor* in Notification settings).
+- **Accessibility:** not normally required. The shortcuts use macOS Carbon hotkeys. Only if that fails and it falls back to `pynput` will macOS ask you to enable `~/.slacktracker/venv/bin/python` in *System Settings → Privacy & Security → Accessibility*.
 
 ## Scripting
 
 ```bash
-pkill -USR2 -f slacktracker.py   # start / stop (toggle)
-pkill -USR1 -f slacktracker.py   # present the Touch Bar
+pkill -USR2 -f slacktracker.py   # start / stop
+pkill -USR1 -f slacktracker.py   # show the Touch Bar controls
 ```
 
-## Log file
-
-```
-## 2026-09-28
-
-- 09:00:00 → 10:17:33 · **1h 17m 33s** (77 min)
-- 14:00:00 → 14:25:05 · **25m 05s** (25 min)
-```
-
-A new `## <date>` heading is added the first time you log a period on a given day. The in-progress start time is kept in `~/.slacktracker_state.json`.
+State (the running period, recent history, settings) is kept in `~/.slacktracker_state.json`.
 
 ## Uninstall
 
@@ -67,5 +94,5 @@ rm -rf ~/.slacktracker ~/Library/LaunchAgents/com.slacktracker.plist
 ```
 
 ## Requirements
-- macOS with `python3` (`xcode-select --install` if missing).
+- macOS 11+ with `python3` (`xcode-select --install` if missing). The Control Strip button needs a Touch Bar MacBook Pro.
 - No admin password needed.
