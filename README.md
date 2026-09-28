@@ -5,6 +5,7 @@
 **A tiny, native-feeling work timer for your Mac's menu bar and Touch Bar.**<br>
 Press Start. Press Stop. Every period lands in a clean Markdown log.
 
+[![CI](https://github.com/miqqidami/SlackTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/miqqidami/SlackTracker/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![macOS](https://img.shields.io/badge/macOS-11%2B-black?logo=apple)
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)

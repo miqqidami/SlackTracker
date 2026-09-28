@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest pyflakes
+      - name: Lint
+        run: pyflakes slacktracker.py tests
+      - name: Check shell scripts
+        run: bash -n install.sh && bash -n uninstall.sh
+      - name: Test
+        run: pytest -v
