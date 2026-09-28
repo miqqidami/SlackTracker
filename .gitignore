@@ -10,3 +10,9 @@ __pycache__/
 build/
 dist/
 *.app
+
+# Local dev
+.venv/
+venv/
+.pytest_cache/
+*.md.tmp

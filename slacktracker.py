@@ -19,7 +19,7 @@ import threading
 import subprocess
 import ctypes
 import signal
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from pathlib import Path
 from time import monotonic
 
@@ -64,6 +64,9 @@ try:
 except Exception:
     HAVE_PYNPUT = False
 
+
+__version__ = "2.0.0"
+REPO_URL = "https://github.com/miqqidami/SlackTracker"
 
 HOME = Path.home()
 LOG_FILE = HOME / "SlackWorkLog.md"
@@ -641,6 +644,7 @@ class SlackTracker(rumps.App):
             None,
             self._item("Show Touch Bar Controls", self.present_touchbar, "rectangle.bottomthird.inset.filled"),
             settings,
+            self._item(f"About SlackTracker {__version__}", self.open_repo, "info.circle"),
             None,
             self._item("Quit SlackTracker", self.quit_app, "power", key="q"),
         ]
@@ -1215,6 +1219,9 @@ class SlackTracker(rumps.App):
         if not LOG_FILE.exists():
             LOG_FILE.write_text("# Work Log\n\n_Tracked with SlackTracker._\n")
         subprocess.run(["open", str(LOG_FILE)])
+
+    def open_repo(self, _):
+        subprocess.run(["open", REPO_URL])
 
     def quit_app(self, _):
         rumps.quit_application()

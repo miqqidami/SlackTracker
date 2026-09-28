@@ -1,0 +1,4 @@
+rumps>=0.4
+pyobjc-framework-Cocoa>=10.0
+# Optional: global-shortcut fallback if Carbon hotkeys cannot be registered.
+pynput>=1.7
