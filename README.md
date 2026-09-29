@@ -67,7 +67,7 @@ That's it: ⏱ appears in your menu bar and SlackTracker starts automatically at
 <summary>What the installer does</summary>
 
 - Copies `slacktracker.py` to `~/.slacktracker/` and creates a private virtualenv with `rumps` and `pyobjc-framework-Cocoa`.
-- Registers a per-user `launchd` agent (`~/Library/LaunchAgents/com.slacktracker.plist`) that keeps the app alive.
+- Registers a per-user `launchd` agent (`~/Library/LaunchAgents/com.slacktracker.plist`) that starts SlackTracker at login and restarts it if it ever crashes. Choosing **Quit** keeps it closed until your next login.
 - Nothing is written outside your home folder.
 
 </details>

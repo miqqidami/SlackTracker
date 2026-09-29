@@ -78,7 +78,9 @@ cat > "$PLIST" <<EOF
     <string>$APP_DIR/slacktracker.py</string>
   </array>
   <key>RunAtLoad</key><true/>
-  <key>KeepAlive</key><true/>
+  <!-- Restart after a crash, but respect Quit (a clean exit) until next login. -->
+  <key>KeepAlive</key>
+  <dict><key>SuccessfulExit</key><false/></dict>
   <key>StandardOutPath</key><string>$APP_DIR/out.log</string>
   <key>StandardErrorPath</key><string>$APP_DIR/err.log</string>
 </dict>
