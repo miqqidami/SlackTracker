@@ -62,14 +62,25 @@ cd SlackTracker
 bash install.sh
 ```
 
-That's it: ⏱ appears in your menu bar and SlackTracker starts automatically at login. No admin password, no account, no signing prompts.
+That's it: ⏱ appears in your menu bar, **SlackTracker.app** appears in Applications, and the timer starts automatically at login. No admin password, no account, no signing prompts.
+
+<img src="assets/AppIcon.png" alt="App icon" width="96" align="right">
+
+**Make it yours.** Name the app whatever you like, and that name is used in Finder, Spotlight, the menu and notifications:
+
+```bash
+APP_NAME=TimeTracker bash install.sh
+```
+
+Open the app from Spotlight, Launchpad or Finder to start the timer after you've quit it. If it's already running, opening it brings up the Touch Bar controls.
 
 <details>
 <summary>What the installer does</summary>
 
 - Copies `slacktracker.py` to `~/.slacktracker/` and creates a private virtualenv with `rumps` and `pyobjc-framework-Cocoa`.
-- Registers a per-user `launchd` agent (`~/Library/LaunchAgents/com.slacktracker.plist`) that starts SlackTracker at login and restarts it if it ever crashes. Choosing **Quit** keeps it closed until your next login.
-- Nothing is written outside your home folder.
+- Builds `<APP_NAME>.app` in `/Applications` (or `~/Applications` if that isn't writable). It's a tiny launcher with the app icon, registered with Launch Services and Spotlight.
+- Registers a per-user `launchd` agent (`~/Library/LaunchAgents/com.slacktracker.plist`) that starts the timer at login and restarts it if it ever crashes. Choosing **Quit** keeps it closed until your next login. The agent is linked to the app, so it appears under its name in *System Settings → General → Login Items*.
+- Set `APP_LOCATION=~/Applications` to choose where the app goes.
 
 </details>
 

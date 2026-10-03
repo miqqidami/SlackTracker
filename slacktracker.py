@@ -67,6 +67,8 @@ except Exception:
 
 __version__ = "2.0.0"
 REPO_URL = "https://github.com/miqqidami/SlackTracker"
+# Display name in menus and notifications; install.sh sets it (e.g. APP_NAME=TimeTracker).
+APP_NAME = os.environ.get("SLACKTRACKER_APP_NAME", "").strip() or "SlackTracker"
 
 HOME = Path.home()
 LOG_FILE = HOME / "SlackWorkLog.md"
@@ -148,7 +150,7 @@ def notify(title: str, message: str, sound: str = "") -> None:
     """Post a macOS notification without blocking the UI thread."""
     def esc(value):
         return value.replace("\\", "\\\\").replace('"', '\\"')
-    script = f'display notification "{esc(message)}" with title "SlackTracker" subtitle "{esc(title)}"'
+    script = f'display notification "{esc(message)}" with title "{esc(APP_NAME)}" subtitle "{esc(title)}"'
     if sound:
         script += f' sound name "{sound}"'
     threading.Thread(
@@ -200,7 +202,7 @@ def record_period(path: Path, period: dict) -> None:
     if path.exists():
         lines = path.read_text(encoding="utf-8").rstrip("\n").split("\n")
     else:
-        lines = ["# Work Log", "", "_Tracked with SlackTracker._"]
+        lines = ["# Work Log", "", f"_Tracked with {APP_NAME}._"]
 
     last_heading = max((i for i, line in enumerate(lines) if line.startswith("## ")), default=-1)
     rows = []
@@ -554,7 +556,7 @@ else:
 
 class SlackTracker(rumps.App):
     def __init__(self):
-        super().__init__("SlackTracker", title="⏱", quit_button=None)
+        super().__init__(APP_NAME, title="⏱", quit_button=None)
         if HAVE_APPKIT:
             try:
                 NSApp.setActivationPolicy_(NSApplicationActivationPolicyAccessory)
@@ -644,9 +646,9 @@ class SlackTracker(rumps.App):
             None,
             self._item("Show Touch Bar Controls", self.present_touchbar, "rectangle.bottomthird.inset.filled"),
             settings,
-            self._item(f"About SlackTracker {__version__}", self.open_repo, "info.circle"),
+            self._item(f"About {APP_NAME} {__version__}", self.open_repo, "info.circle"),
             None,
-            self._item("Quit SlackTracker", self.quit_app, "power", key="q"),
+            self._item(f"Quit {APP_NAME}", self.quit_app, "power", key="q"),
         ]
 
     def _sync_setting_checks(self):
@@ -1217,7 +1219,7 @@ class SlackTracker(rumps.App):
 
     def open_log(self, _):
         if not LOG_FILE.exists():
-            LOG_FILE.write_text("# Work Log\n\n_Tracked with SlackTracker._\n")
+            LOG_FILE.write_text(f"# Work Log\n\n_Tracked with {APP_NAME}._\n")
         subprocess.run(["open", str(LOG_FILE)])
 
     def open_repo(self, _):
